@@ -65,13 +65,14 @@ header.top h1{color:var(--brand)}
 header.top h1{font-size:clamp(34px,7vw,56px);font-weight:800;margin-top:6px}
 header.top p{max-width:60ch;color:var(--muted);margin:10px 0 0}
 
-section{padding-block:22px}
+section{padding-block:28px}
+section+section{border-top:1.5px solid var(--line)}
 .sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .sec-h h2{font-size:22px;font-weight:800}
 .sec-h small{color:var(--muted)}
 
 /* Botones de situación */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));grid-auto-rows:1fr;gap:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));grid-auto-rows:1fr;gap:12px}
 .tile>div:last-child{min-width:0;flex:1}
 .tile.coded span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;line-height:1.3}
 .tile.coded b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -221,6 +222,9 @@ footer{padding-block:24px 48px;color:var(--muted);font-size:14px}
 ol.steps li{grid-template-columns:44px minmax(0,1fr);column-gap:calc(var(--g)*2);padding:calc(var(--g)*2);align-items:start}
 ol.steps h3{line-height:24px;margin-top:10px}
 .vtop{min-height:44px}
+/* Números de arriba: ocupan todo el ancho de la grilla */
+.callbar a{flex:1 0 auto;justify-content:center}
+@media (min-width:720px){.callbar .wrap{-webkit-mask-image:none;mask-image:none;overflow:visible}}
 /* Barra inferior: botones grandes y legibles */
 body{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
 .dock{padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
@@ -260,6 +264,11 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
     <section>
       <div class="sec-h" id="s-edif"><h2>Emergencias del edificio</h2><small>Cada color es un código</small></div>
       <div class="grid" id="g-edif"></div>
+    </section>
+
+    <section id="s-res">
+      <div class="sec-h"><div><h2>Residentes</h2><small>Situaciones del día a día que pueden volverse un riesgo</small></div></div>
+      <div class="grid" id="g-res"></div>
     </section>
 
     <section>
@@ -364,7 +373,7 @@ const P=[
   ],
   top:`<div class="never"><b>Nunca, nunca, nunca por la terraza</b><p>Está prohibido pasar de un departamento a otro por la terraza o por ventanas, aunque el residente lo pida o diga que lo ha hecho antes. Riesgo de caída. La seguridad personal va primero.</p></div>`},
 
- {id:'medica',group:'alc',c:'var(--med)',icon:'heart',code:'Vecino mayor · Alcanzable',title:'Urgencia médica',short:'Se siente mal, cayó o no responde',
+ {id:'medica',group:'alc',c:'var(--med)',icon:'heart',code:'Vecino mayor',title:'Urgencia médica',short:'Se siente mal, cayó o no responde',
   q:'¿Cómo está la persona?',
   variants:[
    {label:'Riesgo vital',desc:'No respira, dolor de pecho o desmayo',steps:[
@@ -397,7 +406,7 @@ const P=[
   </details>
   <div class="note"><b>Centro de salud de referencia</b>Según la guía Alcanzable, para el sector Hipódromo (Independencia): SAPU y CESFAM Cruz Melo, Domingo Santa María 1269. Confirma con administración que corresponde a tu edificio.</div>`},
 
- {id:'maltrato',group:'alc',c:'var(--care)',icon:'shield',code:'Vecino mayor · Alcanzable',title:'Maltrato',short:'Sospecha de golpes, abandono o abuso',
+ {id:'maltrato',group:'alc',c:'var(--care)',icon:'shield',code:'Vecino mayor',title:'Maltrato',short:'Sospecha de golpes, abandono o abuso',
   q:'¿Qué tan claro es?',
   variants:[
    {label:'Lo estoy viendo',desc:'Maltrato en directo, ahora mismo',steps:[
@@ -420,7 +429,7 @@ const P=[
     <h4>Negligencia o abandono</h4><div class="chips"><span>Higiene descuidada</span><span>Se ve desnutrida o deshidratada</span><span>Aislamiento</span><span>No toma o toma de más sus remedios</span><span>Departamento insalubre</span></div>
   </details>`},
 
- {id:'fallecimiento',group:'alc',c:'var(--rip)',icon:'dove',code:'Vecino mayor · Alcanzable',title:'Fallecimiento',short:'Un vecino falleció en el edificio',
+ {id:'fallecimiento',group:'alc',c:'var(--rip)',icon:'dove',code:'Vecino mayor',title:'Fallecimiento',short:'Un vecino falleció en el edificio',
   q:'¿Tenía contactos o red de apoyo?',
   variants:[
    {label:'No tiene red',desc:'Vivía solo, sin contactos',steps:[
@@ -505,7 +514,7 @@ function tile(p){
   b.onclick=()=>open(p.id);return b;
 }
 P.filter(p=>p.id!=='llaves').forEach(p=>$(p.group==='alc'?'#g-alc':'#g-edif').append(tile(p)));
-$('#g-edif').append(tile(P.find(p=>p.id==='llaves')));
+$('#g-res').append(tile(P.find(p=>p.id==='llaves')));
 
 $('#dir').innerHTML=DIR.map(([g,c,items])=>`<div class="dgroup" style="--c:${c}"><h3>${g}</h3><div class="dir">${items.map(([n,l])=>n
  ?`<div><a href="${tel(n)}"><b>${n}</b><span>${l}</span></a><button class="copy" data-n="${n}" aria-label="Copiar ${n}">Copiar</button></div>`
